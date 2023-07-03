@@ -12,8 +12,8 @@ RUN /usr/bin/apt-get update \
 USER python
 RUN /usr/local/bin/python -m venv /home/python/venv
 
-COPY --chown=python:python requirements.txt /home/pthon/databricks-sql-scripts/requirements.txt
-RUN /home/python/venv/bin/pip install --no-cache-dir --requirement /home/pthon/databricks-sql-scripts/requirements.txt
+COPY --chown=python:python requirements.txt /home/python/databricks-sql-scripts/requirements.txt
+RUN /home/python/venv/bin/pip install --no-cache-dir --requirement /home/python/databricks-sql-scripts/requirements.txt
 
 ENV PATH="/home/python/venv/bin:${PATH}" \
     PYTHONDONTWRITEBYTECODE="1" \
@@ -21,6 +21,11 @@ ENV PATH="/home/python/venv/bin:${PATH}" \
     TZ="Etc/UTC"
 
 WORKDIR /home/python/databricks-sql-scripts
+
+COPY --chown=python:python dbx /home/python/databricks-sql-scripts/dbx
+COPY --chown=python:python pg /home/python/databricks-sql-scripts/pg
+COPY --chown=python:python common.py /home/python/databricks-sql-scripts/common.py
+COPY --chown=python:python get-iics-organizations.py /home/python/databricks-sql-scripts/get-iics-organizations.py
 
 LABEL org.opencontainers.image.authors="William Jackson <wjackson@informatica.com>" \
       org.opencontainers.image.source="https://bitb.informatica.com/projects/TS/repos/databricks-sql-scripts"
