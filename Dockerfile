@@ -2,6 +2,13 @@ FROM python:3.11.4-slim-bookworm
 
 RUN /usr/sbin/useradd --create-home --shell /bin/bash --user-group python
 
+ARG DEBIAN_FRONTEND=noninteractive
+RUN /usr/bin/apt-get update \
+ && /usr/bin/apt-get install --assume-yes \
+    	# required for psycopg2
+        postgresql-common \
+ && rm -rf /var/lib/apt/lists/*
+
 USER python
 RUN /usr/local/bin/python -m venv /home/python/venv
 
