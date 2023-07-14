@@ -26,6 +26,8 @@ COPY --chown=python:python dbx /home/python/databricks-sql-scripts/dbx
 COPY --chown=python:python pg /home/python/databricks-sql-scripts/pg
 COPY --chown=python:python common.py /home/python/databricks-sql-scripts/common.py
 COPY --chown=python:python get-iics-organizations.py /home/python/databricks-sql-scripts/get-iics-organizations.py
+COPY --chown=python:python get-iics-user-roles.py /home/python/databricks-sql-scripts/get-iics-user-roles.py
+COPY --chown=python:python get-iics-users.py /home/python/databricks-sql-scripts/get-iics-users.py
 
 LABEL org.opencontainers.image.authors="William Jackson <wjackson@informatica.com>" \
       org.opencontainers.image.source="https://bitb.informatica.com/projects/TS/repos/databricks-sql-scripts"
