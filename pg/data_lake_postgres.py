@@ -11,6 +11,40 @@ def batch_upsert(cnx, sql, records):
             psycopg2.extras.execute_batch(cur, sql, records)
 
 
+def batch_upsert_iics_agents(cnx, records):
+    sql = '''
+        insert into iics_agents (
+            agent_key, org_key, region_id, pod_id, org_id, org_uuid, agent_group_id,
+            agent_group_name, agent_group_desc, agent_id, agent_name, agent_host,
+            agent_description, is_active, agent_platform, agent_last_status_change_at,
+            agent_group_created_at, agent_group_updated_at, agent_group_created_by,
+            agent_group_updated_by, agent_created_at, agent_updated_at, agent_created_by,
+            agent_updated_by, agent_group_is_deleted, agent_is_deleted, is_current,
+            record_updated_at
+        ) values (
+            %(agent_key)s, %(org_key)s, %(region_id)s, %(pod_id)s, %(org_id)s, %(org_uuid)s, %(agent_group_id)s,
+            %(agent_group_name)s, %(agent_group_desc)s, %(agent_id)s, %(agent_name)s, %(agent_host)s,
+            %(agent_description)s, %(is_active)s, %(agent_platform)s, %(agent_last_status_change_at)s,
+            %(agent_group_created_at)s, %(agent_group_updated_at)s, %(agent_group_created_by)s,
+            %(agent_group_updated_by)s, %(agent_created_at)s, %(agent_updated_at)s, %(agent_created_by)s,
+            %(agent_updated_by)s, %(agent_group_is_deleted)s, %(agent_is_deleted)s, %(is_current)s,
+            %(record_updated_at)s
+        ) on conflict (agent_key) do update set
+            org_key = %(org_key)s, region_id = %(region_id)s, pod_id = %(pod_id)s, org_id = %(org_id)s,
+            org_uuid = %(org_uuid)s, agent_group_id = %(agent_group_id)s, agent_group_name = %(agent_group_name)s,
+            agent_group_desc = %(agent_group_desc)s, agent_id = %(agent_id)s, agent_name = %(agent_name)s,
+            agent_host = %(agent_host)s, agent_description = %(agent_description)s, is_active = %(is_active)s,
+            agent_platform = %(agent_platform)s, agent_last_status_change_at = %(agent_last_status_change_at)s,
+            agent_group_created_at = %(agent_group_created_at)s, agent_group_updated_at = %(agent_group_updated_at)s,
+            agent_group_created_by = %(agent_group_created_by)s, agent_group_updated_by = %(agent_group_updated_by)s,
+            agent_created_at = %(agent_created_at)s, agent_updated_at = %(agent_updated_at)s,
+            agent_created_by = %(agent_created_by)s, agent_updated_by = %(agent_updated_by)s,
+            agent_group_is_deleted = %(agent_group_is_deleted)s, agent_is_deleted = %(agent_is_deleted)s,
+            is_current = %(is_current)s, record_updated_at = %(record_updated_at)s
+    '''
+    batch_upsert(cnx, sql, records)
+
+
 def batch_upsert_iics_organizations(cnx, records):
     sql = '''
         insert into iics_organizations (
@@ -72,6 +106,18 @@ def batch_upsert_iics_users(cnx, records):
             updated_at = %(updated_at)s, updated_by = %(updated_by)s, user_id = %(user_id)s, user_name = %(user_name)s
     '''
     batch_upsert(cnx, sql, records)
+
+
+def get_iics_agents_max_record_updated_at(cnx):
+    sql = '''
+        select max(record_updated_at) max_record_updated_at from iics_agents
+    '''
+    with cnx:
+        with cnx.cursor() as cur:
+            cur.execute(sql)
+            row = cur.fetchone()
+    if row is not None:
+        return row.get('max_record_updated_at')
 
 
 def get_iics_organizations_max_org_last_updated_at(cnx):

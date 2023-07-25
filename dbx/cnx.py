@@ -17,6 +17,34 @@ def yield_rows(cnx: databricks.sql.client.Connection, sql: str, params: dict = N
                 yield row.asDict()
 
 
+def get_iics_agents(cnx: databricks.sql.client.Connection, record_updated_at_start):
+    log.info(f'Getting IICS agents in AWS-TS region updated on or after {record_updated_at_start}')
+    sql = '''
+        select * from (
+            select
+                agent_key, org_key, region_id, pod_id, org_id, org_uuid, agent_group_id, agent_group_name,
+                agent_group_desc, agent_id, agent_name, agent_host, agent_description,
+                cast(agent_active as boolean) is_active, agent_platform,
+                agent_last_status_change_on agent_last_status_change_at, agent_group_created_on agent_group_created_at,
+                agent_group_updated_on agent_group_updated_at, agent_group_created_by, agent_group_updated_by,
+                agent_created_on agent_created_at, agent_updated_on agent_updated_at, agent_created_by,
+                agent_updated_by, cast(agent_group_is_deleted as boolean) as agent_group_is_deleted,
+                cast(agent_is_deleted as boolean) as agent_is_deleted, cast(current_flag as boolean) is_current,
+                case
+                    when agent_updated_on is null then agent_group_updated_on
+                    when agent_updated_on > agent_group_updated_on then agent_updated_on
+                    else agent_group_updated_on
+                end record_updated_at
+            from prod_dev_sor.iics_agent_dim
+            where region_id = 'AWS-TS') t
+        where record_updated_at > %(record_updated_at_start)s
+    '''
+    params = {
+        'record_updated_at_start': record_updated_at_start
+    }
+    yield from yield_rows(cnx, sql, params)
+
+
 def get_iics_organizations(cnx: databricks.sql.client.Connection, org_last_updated_on_start):
     log.info(f'Getting IICS organizations in AWS-TS region updated on or after {org_last_updated_on_start}')
     sql = '''
