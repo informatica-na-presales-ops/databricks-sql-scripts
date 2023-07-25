@@ -37,7 +37,7 @@ def get_iics_agents(cnx: databricks.sql.client.Connection, record_updated_at_sta
                 end record_updated_at
             from prod_dev_sor.iics_agent_dim
             where region_id = 'AWS-TS') t
-        where record_updated_at > %(record_updated_at_start)s
+        where record_updated_at >= %(record_updated_at_start)s
     '''
     params = {
         'record_updated_at_start': record_updated_at_start
