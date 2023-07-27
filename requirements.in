@@ -1,4 +1,4 @@
 apscheduler
-databricks-sql-connector
+databricks-sql-connector==2.7.0
 notch
 psycopg2-binary
