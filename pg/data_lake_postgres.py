@@ -69,6 +69,23 @@ def batch_upsert_iics_organizations(cnx, records):
     batch_upsert(cnx, sql, records)
 
 
+def batch_insert_iics_user_logs(cnx, records):
+    sql = '''
+        insert into iics_user_logs (
+            user_log_key, region_id, pod_id, login_id, org_key, org_uuid, org_id,
+            entry_time, user_key, username, created_at, created_by, updated_at, updated_by,
+            created_by_id, updated_by_id, version, category, category_ui_name, event,
+            event_param, object_id, object_name, session_id, location, log_type, log_date
+        ) values (
+            %(user_log_key)s, %(region_id)s, %(pod_id)s, %(login_id)s, %(org_key)s, %(org_uuid)s, %(org_id)s,
+            %(entry_time)s, %(user_key)s, %(username)s, %(created_at)s, %(created_by)s, %(updated_at)s, %(updated_by)s,
+            %(created_by_id)s, %(updated_by_id)s, %(version)s, %(category)s, %(category_ui_name)s, %(event)s,
+            %(event_param)s, %(object_id)s, %(object_name)s, %(session_id)s, %(location)s, %(log_type)s, %(log_date)s
+        ) 
+    '''
+    batch_upsert(cnx, sql, records)
+
+
 def batch_upsert_iics_user_roles(cnx, records):
     sql = '''
         insert into iics_user_roles (
@@ -130,6 +147,18 @@ def get_iics_organizations_max_org_last_updated_at(cnx):
             row = cur.fetchone()
     if row is not None:
         return row.get('max_org_last_updated_at')
+
+
+def get_iics_user_logs_max_user_log_key(cnx):
+    sql = '''
+        select max(user_log_key) max_user_log_key from iics_user_logs
+    '''
+    with cnx:
+        with cnx.cursor() as cur:
+            cur.execute(sql)
+            row = cur.fetchone()
+    if row is not None:
+        return row.get('max_user_log_key')
 
 
 def get_iics_user_roles_max_updated_at(cnx):

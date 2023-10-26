@@ -13,7 +13,10 @@ def yield_rows(cnx: databricks.sql.client.Connection, sql: str, params: dict = N
     with cnx:
         with cnx.cursor() as cur:
             cur.execute(sql, params)
-            for row in cur.fetchall():
+            while True:
+                row = cur.fetchone()
+                if row is None:
+                    return
                 yield row.asDict()
 
 
@@ -60,6 +63,27 @@ def get_iics_organizations(cnx: databricks.sql.client.Connection, org_last_updat
     '''
     params = {
         'org_last_updated_on_start': org_last_updated_on_start
+    }
+    yield from yield_rows(cnx, sql, params)
+
+
+def get_iics_user_logs(cnx: databricks.sql.client.Connection, key_start):
+    log.info(f'Getting IICS user logs in AWS-TS region with key greater than {key_start}')
+    sql = '''
+        select
+            user_log_key, region_id, pod_id, login_id, org_key, org_uuid, org_id, entry_time, user_key, username,
+            createtime created_at, createdby created_by, updatetime updated_at, updatedby updated_by,
+            createdby_id created_by_id, updatedby_id updated_by_id, version, category, category_ui_name, event,
+            eventparam event_param, objectid object_id, objectname object_name, sessionid session_id, location,
+            log_type, log_date
+        from prod_dev_sor.iics_user_log
+        where region_id = 'AWS-TS'
+        and user_log_key > %(key_start)s
+        order by user_log_key
+        limit 20000
+    '''
+    params = {
+        'key_start': key_start,
     }
     yield from yield_rows(cnx, sql, params)
 
