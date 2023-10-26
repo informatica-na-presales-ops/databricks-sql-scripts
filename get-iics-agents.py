@@ -1,6 +1,6 @@
 import apscheduler.schedulers.blocking
+import datime
 import dbx.cnx
-import common
 import datetime
 import notch
 import os
@@ -47,7 +47,7 @@ def main_job(repeat_interval_hours: int = None):
     else:
         repeat_message = 'quitting'
     duration = int(time.monotonic() - start)
-    log.info(f'Main job complete in {common.human_duration(duration)}, {repeat_message}')
+    log.info(f'Main job complete in {datime.pretty_duration_short(duration)}, {repeat_message}')
 
 
 def main():
