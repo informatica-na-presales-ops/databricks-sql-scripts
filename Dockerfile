@@ -27,7 +27,7 @@ COPY --chown=python:python pg /home/python/databricks-sql-scripts/pg
 COPY --chown=python:python common.py /home/python/databricks-sql-scripts/common.py
 COPY --chown=python:python get-iics-agents.py /home/python/databricks-sql-scripts/get-iics-agents.py
 COPY --chown=python:python get-iics-organizations.py /home/python/databricks-sql-scripts/get-iics-organizations.py
-COPY --chown=python:python get-iics-user-logs.py /home/python/databricks-sql-scripts/get-iics-user-logs.py
+COPY --chown=python:python get-iics-user-weekly-logins.py /home/python/databricks-sql-scripts/get-iics-user-weekly-logins.py
 COPY --chown=python:python get-iics-user-roles.py /home/python/databricks-sql-scripts/get-iics-user-roles.py
 COPY --chown=python:python get-iics-users.py /home/python/databricks-sql-scripts/get-iics-users.py
 

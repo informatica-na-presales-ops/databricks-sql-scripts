@@ -67,27 +67,6 @@ def get_iics_organizations(cnx: databricks.sql.client.Connection, org_last_updat
     yield from yield_rows(cnx, sql, params)
 
 
-def get_iics_user_logs(cnx: databricks.sql.client.Connection, key_start):
-    log.info(f'Getting IICS user logs in AWS-TS region with key greater than {key_start}')
-    sql = '''
-        select
-            user_log_key, region_id, pod_id, login_id, org_key, org_uuid, org_id, entry_time, user_key, username,
-            createtime created_at, createdby created_by, updatetime updated_at, updatedby updated_by,
-            createdby_id created_by_id, updatedby_id updated_by_id, version, category, category_ui_name, event,
-            eventparam event_param, objectid object_id, objectname object_name, sessionid session_id, location,
-            log_type, log_date
-        from prod_dev_sor.iics_user_log
-        where region_id = 'AWS-TS'
-        and user_log_key > %(key_start)s
-        order by user_log_key
-        limit 20000
-    '''
-    params = {
-        'key_start': key_start,
-    }
-    yield from yield_rows(cnx, sql, params)
-
-
 def get_iics_user_roles(cnx: databricks.sql.client.Connection, updated_on_start):
     log.info(f'Getting IICS user roles in AWS-TS region updated on or after {updated_on_start}')
     sql = '''
@@ -103,6 +82,28 @@ def get_iics_user_roles(cnx: databricks.sql.client.Connection, updated_on_start)
         'updated_on_start': updated_on_start,
     }
     yield from yield_rows(cnx, sql, params)
+
+
+def get_iics_user_weekly_logins(cnx: databricks.sql.client.Connection):
+    log.info('Getting IICS user weekly login stats')
+    sql = '''
+        select
+            week_start, email, count(*) login_count
+            from (
+                select
+                    dateadd(day, -1, date_trunc('week', dateadd(day, 1, createtime))) week_start,
+                    lower(u.emails) email
+                from prod_dev_sor.iics_user_log l
+                join prod_dev_sor.iics_user_dim u on u.user_id = l.objectid
+                where l.region_id = 'AWS-TS'
+                and l.event = 'USER_LOGIN'
+                and l.eventparam = 'UI'
+                and endswith(u.emails, '@informatica.com')
+            )
+            where week_start > dateadd(month, -1, now())
+            group by week_start, email
+    '''
+    yield from yield_rows(cnx, sql)
 
 
 def get_iics_users(cnx: databricks.sql.client.Connection, update_time_start):

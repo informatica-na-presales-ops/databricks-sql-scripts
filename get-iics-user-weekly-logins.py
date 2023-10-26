@@ -1,7 +1,6 @@
 import apscheduler.schedulers.blocking
 import dbx.cnx
 import common
-import datetime
 import notch
 import os
 import pg
@@ -9,7 +8,7 @@ import signal
 import sys
 import time
 
-log = notch.make_log('databricks_sql_scripts.get_iics_user_logs')
+log = notch.make_log('databricks_sql_scripts.get_iics_user_weekly_logins')
 
 
 def main_job(repeat_interval_hours: int = None):
@@ -19,22 +18,18 @@ def main_job(repeat_interval_hours: int = None):
     dbx_cnx = dbx.cnx.get_connection(os.getenv('DBX_HOSTNAME'), os.getenv('DBX_HTTP_PATH'), os.getenv('DBX_TOKEN'))
     pg_cnx = pg.cnx.get_connection(os.getenv('PGSQL_DSN'))
 
-    key_start = pg.data_lake_postgres.get_iics_user_logs_max_user_log_key(pg_cnx)
-    if key_start is None:
-        key_start = 0
-
     records = []
     total = 0
 
-    for row in dbx.cnx.get_iics_user_logs(dbx_cnx, key_start):
+    for row in dbx.cnx.get_iics_user_weekly_logins(dbx_cnx):
         total += 1
         records.append(row)
         if len(records) > 999:
-            pg.data_lake_postgres.batch_insert_iics_user_logs(pg_cnx, records)
+            pg.data_lake_postgres.batch_upsert_iics_weekly_logins(pg_cnx, records)
             records = []
 
     if len(records) > 0:
-        pg.data_lake_postgres.batch_insert_iics_user_logs(pg_cnx, records)
+        pg.data_lake_postgres.batch_upsert_iics_weekly_logins(pg_cnx, records)
         pass
 
     log.info(f'Total records: {total}')
