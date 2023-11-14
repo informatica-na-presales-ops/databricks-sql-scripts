@@ -11,6 +11,39 @@ def batch_upsert(cnx, sql, records):
             psycopg2.extras.execute_batch(cur, sql, records)
 
 
+def batch_upsert_iics_advanced_cluster_configs(cnx, records):
+    sql = '''
+        insert into iics_advanced_cluster_configs (
+            cloud_type, config_id, config_key, iics_id, is_current, is_deleted,
+            master_instance_type, org_id, org_key, org_uuid, pod_id, worker_instance_type
+        ) values (
+            %(cloud_type)s, %(config_id)s, %(config_key)s, %(iics_id)s, %(is_current)s, %(is_deleted)s,
+            %(master_instance_type)s, %(org_id)s, %(org_key)s, %(org_uuid)s, %(pod_id)s, %(worker_instance_type)s
+        ) on conflict (config_key) do update set
+            cloud_type = excluded.cloud_type, config_id = excluded.config_id, iics_id = excluded.iics_id,
+            is_current = excluded.is_current, is_deleted = excluded.is_deleted,
+            master_instance_type = excluded.master_instance_type, org_id = excluded.org_id, org_key = excluded.org_key,
+            org_uuid = excluded.org_uuid, pod_id = excluded.pod_id, worker_instance_type = excluded.worker_instance_type
+    '''
+    batch_upsert(cnx, sql, records)
+
+
+def batch_upsert_iics_advanced_cluster_instances(cnx, records):
+    sql = '''
+        insert into iics_advanced_cluster_instances (
+            agent_group_id, cluster_config_id, ephemeral_id, iics_id, instance_id, instance_key,
+            is_current, is_deleted, pod_id
+        ) values (
+            %(agent_group_id)s, %(cluster_config_id)s, %(ephemeral_id)s, %(iics_id)s, %(instance_id)s, %(instance_key)s,
+            %(is_current)s, %(is_deleted)s, %(pod_id)s
+        ) on conflict (instance_key) do update set
+            agent_group_id = excluded.agent_group_id, cluster_config_id = excluded.cluster_config_id,
+            ephemeral_id = excluded.ephemeral_id, iics_id = excluded.iics_id, instance_id = excluded.instance_id,
+            is_current = excluded.is_current, is_deleted = excluded.is_deleted, pod_id = excluded.pod_id
+    '''
+    batch_upsert(cnx, sql, records)
+
+
 def batch_upsert_iics_agents(cnx, records):
     sql = '''
         insert into iics_agents (
@@ -70,6 +103,26 @@ def batch_upsert_iics_organizations(cnx, records):
             org_registered_at = excluded.org_registered_at, org_type = excluded.org_type,
             org_type_lic = excluded.org_type_lic, org_uuid = excluded.org_uuid, parent_org_id = excluded.parent_org_id,
             pod_id = excluded.pod_id, region_id = excluded.region_id, time_zone = excluded.time_zone
+    '''
+    batch_upsert(cnx, sql, records)
+
+
+def batch_upsert_iics_serverless_environments(cnx, records):
+    sql = '''
+        insert into iics_serverless_environments (
+            az, cloud_provider, created_at, expires_at, last_updated_at, name, org_key,
+            org_uuid, pod_id, region, region_id, serverless_env_id, serverless_env_key,
+            type, user_name
+        ) values (
+            %(az)s, %(cloud_provider)s, %(created_at)s, %(expires_at)s, %(last_updated_at)s, %(name)s, %(org_key)s,
+            %(org_uuid)s, %(pod_id)s, %(region)s, %(region_id)s, %(serverless_env_id)s, %(serverless_env_key)s,
+            %(type)s, %(user_name)s
+        ) on conflict (serverless_env_key) do update set
+            az = excluded.az, cloud_provider = excluded.cloud_provider, created_at = excluded.created_at,
+            expires_at = excluded.expires_at, last_updated_at = excluded.last_updated_at, name = excluded.name,
+            org_key = excluded.org_key, org_uuid = excluded.org_uuid, pod_id = excluded.pod_id,
+            region = excluded.region, region_id = excluded.region_id, serverless_env_id = excluded.serverless_env_id,
+            type = excluded.type, user_name = excluded.user_name
     '''
     batch_upsert(cnx, sql, records)
 

@@ -39,6 +39,18 @@ def main_job(repeat_interval_hours: int = None):
 
     log.info(f'Total records: {total}')
 
+    dbx_cnx = dbx.cnx.get_connection(os.getenv('DBX_HOSTNAME'), os.getenv('DBX_HTTP_PATH'), os.getenv('DBX_TOKEN'))
+    adv_configs = list(dbx.cnx.get_iics_advanced_cluster_configs(dbx_cnx))
+    pg.data_lake_postgres.batch_upsert_iics_advanced_cluster_configs(pg_cnx, adv_configs)
+
+    dbx_cnx = dbx.cnx.get_connection(os.getenv('DBX_HOSTNAME'), os.getenv('DBX_HTTP_PATH'), os.getenv('DBX_TOKEN'))
+    adv_instances = list(dbx.cnx.get_iics_advanced_cluster_instances(dbx_cnx))
+    pg.data_lake_postgres.batch_upsert_iics_advanced_cluster_instances(pg_cnx, adv_instances)
+
+    dbx_cnx = dbx.cnx.get_connection(os.getenv('DBX_HOSTNAME'), os.getenv('DBX_HTTP_PATH'), os.getenv('DBX_TOKEN'))
+    serverless = list(dbx.cnx.get_iics_serverless_environments(dbx_cnx))
+    pg.data_lake_postgres.batch_upsert_iics_serverless_environments(pg_cnx, serverless)
+
     if repeat_interval_hours:
         plural = 's'
         if repeat_interval_hours == 1:
