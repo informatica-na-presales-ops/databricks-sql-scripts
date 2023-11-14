@@ -9,8 +9,8 @@ def get_connection(server_hostname: str, http_path: str, access_token: str):
     return cnx
 
 
-def yield_rows(cnx: databricks.sql.client.Connection, sql: str, params: dict = None):
-    with cnx:
+def yield_rows(cnx: databricks.sql.client.Connection, sql: str, params: dict = None, close_cnx: bool = True):
+    try:
         with cnx.cursor() as cur:
             cur.execute(sql, params)
             while True:
@@ -18,9 +18,12 @@ def yield_rows(cnx: databricks.sql.client.Connection, sql: str, params: dict = N
                 if row is None:
                     return
                 yield row.asDict()
+    finally:
+        if close_cnx:
+            cnx.close()
 
 
-def get_iics_advanced_cluster_configs(cnx: databricks.sql.client.Connection):
+def get_iics_advanced_cluster_configs(cnx: databricks.sql.client.Connection, close_cnx: bool):
     log.info('Getting IICS advanced cluster configs in AWS-TS region')
     sql = '''
         select
@@ -30,10 +33,10 @@ def get_iics_advanced_cluster_configs(cnx: databricks.sql.client.Connection):
         from prod_dev_sor.iics_cdi_e_cluster_config_dim
         where iics_id = 'AWS-TS'
     '''
-    yield from yield_rows(cnx, sql)
+    yield from yield_rows(cnx, sql, close_cnx=close_cnx)
 
 
-def get_iics_advanced_cluster_instances(cnx: databricks.sql.client.Connection):
+def get_iics_advanced_cluster_instances(cnx: databricks.sql.client.Connection, close_cnx: bool):
     log.info('Getting IICS advanced cluster instances in AWS-TS region')
     sql = '''
         select
@@ -42,10 +45,10 @@ def get_iics_advanced_cluster_instances(cnx: databricks.sql.client.Connection):
         from prod_dev_sor.iics_cdi_e_instance_dim
         where iics_id = 'AWS-TS'
     '''
-    yield from yield_rows(cnx, sql)
+    yield from yield_rows(cnx, sql, close_cnx=close_cnx)
 
 
-def get_iics_agents(cnx: databricks.sql.client.Connection, record_updated_at_start):
+def get_iics_agents(cnx: databricks.sql.client.Connection, record_updated_at_start, close_cnx: bool):
     log.info(f'Getting IICS agents in AWS-TS region updated on or after {record_updated_at_start}')
     sql = '''
         select * from (
@@ -70,7 +73,7 @@ def get_iics_agents(cnx: databricks.sql.client.Connection, record_updated_at_sta
     params = {
         'record_updated_at_start': record_updated_at_start
     }
-    yield from yield_rows(cnx, sql, params)
+    yield from yield_rows(cnx, sql, params, close_cnx)
 
 
 def get_iics_organizations(cnx: databricks.sql.client.Connection, org_last_updated_on_start):
