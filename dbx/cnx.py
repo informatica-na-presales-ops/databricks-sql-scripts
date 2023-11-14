@@ -27,7 +27,7 @@ def get_iics_advanced_cluster_configs(cnx: databricks.sql.client.Connection):
             cloud_type, config_id, config_key, iics_id, cast(current_flag as boolean) is_current,
             cast(isdeleted as boolean) is_deleted, master_instance_type, org_id, org_key, org_uuid, pod_id,
             worker_instance_type
-        from iics_cdi_e_cluster_config_dim
+        from prod_dev_sor.iics_cdi_e_cluster_config_dim
         where iics_id = 'AWS-TS'
     '''
     yield from yield_rows(cnx, sql)
@@ -39,7 +39,7 @@ def get_iics_advanced_cluster_instances(cnx: databricks.sql.client.Connection):
         select
             agent_group_id, cluster_config_id, ephemeral_id, iics_id, instance_id, instance_key,
             cast(current_flag as boolean) is_current, cast(isdeleted as boolean) is_deleted, pod_id
-        from iics_cdi_e_instance_dim
+        from prod_dev_sor.iics_cdi_e_instance_dim
         where iics_id = 'AWS-TS'
     '''
     yield from yield_rows(cnx, sql)
@@ -98,9 +98,10 @@ def get_iics_serverless_environments(cnx: databricks.sql.client.Connection):
         select
             az, cloud_provider, created_time created_at, expiry_time expires_at, last_updated_time last_updated_at,
             name, org_key, org_uuid, pod_id, region, region_id, serverless_env_id, serverless_env_key, type, user_name
-        from iics_serverless_environment
+        from prod_dev_sor.iics_serverless_environment
         where region_id = 'AWS-TS'
     '''
+    yield from yield_rows(cnx, sql)
 
 
 def get_iics_user_roles(cnx: databricks.sql.client.Connection, updated_on_start):
