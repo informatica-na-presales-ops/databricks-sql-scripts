@@ -58,7 +58,7 @@ six==1.16.0
     #   apscheduler
     #   python-dateutil
     #   thrift
-sqlalchemy==1.4.50
+sqlalchemy==1.4.53
     # via
     #   alembic
     #   databricks-sql-connector
