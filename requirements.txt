@@ -51,7 +51,7 @@ pytz==2023.3.post1
     # via
     #   apscheduler
     #   pandas
-requests==2.31.0
+requests==2.32.3
     # via databricks-sql-connector
 six==1.16.0
     # via
