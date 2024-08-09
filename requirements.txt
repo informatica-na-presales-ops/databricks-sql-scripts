@@ -66,7 +66,7 @@ thrift==0.16.0
     # via databricks-sql-connector
 typing-extensions==4.12.2
     # via alembic
-tzdata==2023.3
+tzdata==2024.1
     # via pandas
 tzlocal==5.2
     # via apscheduler
