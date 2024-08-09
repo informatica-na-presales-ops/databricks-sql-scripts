@@ -35,7 +35,7 @@ pandas==2.1.4
     # via databricks-sql-connector
 psycopg2-binary==2.9.9
     # via -r requirements.in
-pyarrow==14.0.1
+pyarrow==16.1.0
     # via databricks-sql-connector
 python-dateutil==2.9.0.post0
     # via pandas
