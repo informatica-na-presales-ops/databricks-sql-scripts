@@ -1,4 +1,4 @@
-FROM python:3.11.4-slim-bookworm
+FROM python:3.12.5-slim-bookworm
 
 RUN /usr/sbin/useradd --create-home --shell /bin/bash --user-group python
 
