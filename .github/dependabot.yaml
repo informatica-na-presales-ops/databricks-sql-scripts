@@ -12,5 +12,6 @@ updates:
     allow:
       - dependency-type: all
     directory: /
+    open-pull-requests-limit: 50
     schedule:
       interval: daily
