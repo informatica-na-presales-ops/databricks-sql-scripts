@@ -50,7 +50,7 @@ six==1.16.0
     #   apscheduler
     #   python-dateutil
     #   thrift
-thrift==0.16.0
+thrift==0.20.0
     # via databricks-sql-connector
 tzdata==2024.1
     # via pandas
