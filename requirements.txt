@@ -22,7 +22,7 @@ greenlet==3.0.3
     # via sqlalchemy
 idna==3.7
     # via requests
-lz4==4.3.2
+lz4==4.3.3
     # via databricks-sql-connector
 mako==1.3.0
     # via alembic
