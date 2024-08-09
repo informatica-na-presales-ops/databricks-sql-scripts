@@ -20,7 +20,7 @@ et-xmlfile==1.1.0
     # via openpyxl
 greenlet==3.0.1
     # via sqlalchemy
-idna==3.4
+idna==3.7
     # via requests
 lz4==4.3.2
     # via databricks-sql-connector
