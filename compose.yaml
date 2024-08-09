@@ -1,9 +1,8 @@
 services:
   shell:
-    build: .
     entrypoint:
       - /bin/bash
-    image: 368099029718.dkr.ecr.us-west-2.amazonaws.com/databricks-sql-scripts
+    image: ghcr.io/informatica-na-presales-ops/databricks-sql-scripts
     init: true
     volumes:
       - ./:/home/python/databricks-sql-scripts
