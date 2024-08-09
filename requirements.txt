@@ -18,7 +18,7 @@ datime==2023.1
     # via -r requirements.in
 et-xmlfile==1.1.0
     # via openpyxl
-greenlet==3.0.1
+greenlet==3.0.3
     # via sqlalchemy
 idna==3.7
     # via requests
