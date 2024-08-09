@@ -30,5 +30,4 @@ COPY --chown=python:python get-iics-user-weekly-logins.py /home/python/databrick
 COPY --chown=python:python get-iics-user-roles.py /home/python/databricks-sql-scripts/get-iics-user-roles.py
 COPY --chown=python:python get-iics-users.py /home/python/databricks-sql-scripts/get-iics-users.py
 
-LABEL org.opencontainers.image.authors="William Jackson <wjackson@informatica.com>" \
-      org.opencontainers.image.source="https://bitb.informatica.com/projects/TS/repos/databricks-sql-scripts"
+LABEL org.opencontainers.image.source="https://github.com/informatica-na-presales-ops/databricks-sql-scripts"
