@@ -47,7 +47,7 @@ pyarrow==14.0.1
     # via databricks-sql-connector
 python-dateutil==2.8.2
     # via pandas
-pytz==2023.3.post1
+pytz==2024.1
     # via
     #   apscheduler
     #   pandas
