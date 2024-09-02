@@ -31,7 +31,7 @@ oauthlib==3.2.2
     # via databricks-sql-connector
 openpyxl==3.1.5
     # via databricks-sql-connector
-pandas==2.1.4
+pandas==2.2.2
     # via databricks-sql-connector
 psycopg2-binary==2.9.9
     # via -r requirements.in
