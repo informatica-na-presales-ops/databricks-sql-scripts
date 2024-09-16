@@ -16,7 +16,7 @@ datime==2023.1
     # via -r requirements.in
 et-xmlfile==1.1.0
     # via openpyxl
-idna==3.8
+idna==3.10
     # via requests
 lz4==4.3.3
     # via databricks-sql-connector
