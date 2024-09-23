@@ -52,7 +52,7 @@ six==1.16.0
     #   thrift
 thrift==0.20.0
     # via databricks-sql-connector
-tzdata==2024.1
+tzdata==2024.2
     # via pandas
 tzlocal==5.2
     # via apscheduler
