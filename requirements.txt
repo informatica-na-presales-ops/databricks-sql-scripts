@@ -33,7 +33,7 @@ openpyxl==3.1.5
     # via databricks-sql-connector
 pandas==2.2.3
     # via databricks-sql-connector
-psycopg2-binary==2.9.9
+psycopg2-binary==2.9.10
     # via -r requirements.in
 pyarrow==16.1.0
     # via databricks-sql-connector
