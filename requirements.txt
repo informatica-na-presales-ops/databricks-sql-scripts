@@ -10,7 +10,7 @@ certifi==2024.8.30
     # via requests
 charset-normalizer==3.4.0
     # via requests
-databricks-sql-connector==3.5.0
+databricks-sql-connector==3.6.0
     # via -r requirements.in
 datime==2023.1
     # via -r requirements.in
