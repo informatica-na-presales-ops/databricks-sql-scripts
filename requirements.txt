@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
-apscheduler==3.10.4
+apscheduler==3.11.0
     # via -r requirements.in
 certifi==2024.8.30
     # via requests
@@ -40,14 +40,11 @@ pyarrow==16.1.0
 python-dateutil==2.9.0.post0
     # via pandas
 pytz==2024.2
-    # via
-    #   apscheduler
-    #   pandas
+    # via pandas
 requests==2.32.3
     # via databricks-sql-connector
 six==1.16.0
     # via
-    #   apscheduler
     #   python-dateutil
     #   thrift
 thrift==0.20.0
