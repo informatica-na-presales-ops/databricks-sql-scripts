@@ -38,7 +38,7 @@ pyarrow==19.0.0
     # via databricks-sql-connector
 python-dateutil==2.9.0.post0
     # via pandas
-pytz==2024.2
+pytz==2025.1
     # via pandas
 requests==2.32.3
     # via databricks-sql-connector
