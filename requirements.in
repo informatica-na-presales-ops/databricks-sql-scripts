@@ -1,5 +1,5 @@
 apscheduler
-databricks-sql-connector
+databricks-sql-connector < 4
 datime
 notch
 psycopg2-binary
