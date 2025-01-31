@@ -1,4 +1,13 @@
 services:
+  pip-compile:
+    entrypoint:
+      - /home/python/venv/bin/pip-compile
+    image: ghcr.io/williamjacksn/pip-tools:py3.12
+    init: true
+    volumes:
+      - ./:/home/python/databricks-sql-scripts
+    working_dir: /home/python/databricks-sql-scripts
+
   shell:
     entrypoint:
       - /bin/bash
