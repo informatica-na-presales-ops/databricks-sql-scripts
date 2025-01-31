@@ -76,8 +76,8 @@ def get_iics_agents(cnx: databricks.sql.client.Connection, record_updated_at_sta
     yield from yield_rows(cnx, sql, params, close_cnx)
 
 
-def get_iics_organizations(cnx: databricks.sql.client.Connection, org_last_updated_on_start):
-    log.info(f'Getting IICS organizations in AWS-TS region updated on or after {org_last_updated_on_start}')
+def get_iics_organizations(cnx: databricks.sql.client.Connection):
+    log.info(f'Getting IICS organizations in AWS-TS region')
     sql = '''
         select
             customer_type, environment_type, cast(is_active as boolean) as is_active,
@@ -87,12 +87,8 @@ def get_iics_organizations(cnx: databricks.sql.client.Connection, org_last_updat
             org_type_lic, org_uuid, parent_org_id, pod_id, region_id, time_zone
         from prod_dev_sor.iics_organization_dim
         where region_id = 'AWS-TS'
-        and org_last_updated_on >= %(org_last_updated_on_start)s
     '''
-    params = {
-        'org_last_updated_on_start': org_last_updated_on_start
-    }
-    yield from yield_rows(cnx, sql, params)
+    yield from yield_rows(cnx, sql)
 
 
 def get_iics_serverless_environments(cnx: databricks.sql.client.Connection):

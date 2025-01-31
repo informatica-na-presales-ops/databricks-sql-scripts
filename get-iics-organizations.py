@@ -19,14 +19,10 @@ def main_job(repeat_interval_hours: int = None):
     dbx_cnx = dbx.cnx.get_connection(os.getenv('DBX_HOSTNAME'), os.getenv('DBX_HTTP_PATH'), os.getenv('DBX_TOKEN'))
     pg_cnx = pg.cnx.get_connection(os.getenv('PGSQL_DSN'))
 
-    org_last_updated_on_start = pg.data_lake_postgres.get_iics_organizations_max_org_last_updated_at(pg_cnx)
-    if org_last_updated_on_start is None:
-        org_last_updated_on_start = datetime.datetime(2000, 1, 1, tzinfo=datetime.timezone.utc)
-
     records = []
     total = 0
 
-    for row in dbx.cnx.get_iics_organizations(dbx_cnx, org_last_updated_on_start):
+    for row in dbx.cnx.get_iics_organizations(dbx_cnx):
         total += 1
         records.append(row)
         if len(records) > 999:
