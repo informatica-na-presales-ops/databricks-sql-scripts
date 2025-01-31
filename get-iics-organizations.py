@@ -1,7 +1,6 @@
 import apscheduler.schedulers.blocking
 import datime
 import dbx.cnx
-import datetime
 import notch
 import os
 import pg
