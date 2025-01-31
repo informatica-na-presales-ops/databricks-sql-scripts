@@ -6,7 +6,7 @@
 #
 apscheduler==3.11.0
     # via -r requirements.in
-certifi==2024.12.14
+certifi==2025.1.31
     # via requests
 charset-normalizer==3.4.1
     # via requests
