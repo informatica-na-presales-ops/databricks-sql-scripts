@@ -50,7 +50,7 @@ thrift==0.20.0
     # via databricks-sql-connector
 tzdata==2025.1
     # via pandas
-tzlocal==5.2
+tzlocal==5.3
     # via apscheduler
 urllib3==2.3.0
     # via
