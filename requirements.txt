@@ -22,7 +22,7 @@ lz4==4.4.3
     # via databricks-sql-connector
 notch==2023.1
     # via -r requirements.in
-numpy==2.2.3
+numpy==2.2.4
     # via
     #   databricks-sql-connector
     #   pandas
