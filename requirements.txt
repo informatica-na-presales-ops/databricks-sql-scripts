@@ -10,7 +10,7 @@ certifi==2025.1.31
     # via requests
 charset-normalizer==3.4.1
     # via requests
-databricks-sql-connector==3.7.3
+databricks-sql-connector==4.0.2
     # via -r requirements.in
 datime==2023.1
     # via -r requirements.in
@@ -23,9 +23,7 @@ lz4==4.4.4
 notch==2023.1
     # via -r requirements.in
 numpy==2.2.4
-    # via
-    #   databricks-sql-connector
-    #   pandas
+    # via pandas
 oauthlib==3.2.2
     # via databricks-sql-connector
 openpyxl==3.1.5
@@ -34,10 +32,10 @@ pandas==2.2.3
     # via databricks-sql-connector
 psycopg2-binary==2.9.10
     # via -r requirements.in
-pyarrow==19.0.1
-    # via databricks-sql-connector
 python-dateutil==2.9.0.post0
-    # via pandas
+    # via
+    #   databricks-sql-connector
+    #   pandas
 pytz==2025.2
     # via pandas
 requests==2.32.3
