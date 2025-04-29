@@ -12,7 +12,7 @@ charset-normalizer==3.4.1
     # via requests
 databricks-sql-connector==4.0.3
     # via -r requirements.in
-datime==2023.1
+datime==2025.0
     # via -r requirements.in
 et-xmlfile==2.0.0
     # via openpyxl
