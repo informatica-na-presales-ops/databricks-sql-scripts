@@ -2,6 +2,7 @@ import apscheduler.schedulers.blocking
 import datime
 import dbx.cnx
 import datetime
+import logging
 import notch
 import os
 import pg
@@ -9,7 +10,8 @@ import signal
 import sys
 import time
 
-log = notch.make_log('databricks_sql_scripts.get_iics_users')
+notch.configure()
+log = logging.getLogger(__name__)
 
 
 def main_job(repeat_interval_hours: int = None):
