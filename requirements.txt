@@ -24,7 +24,7 @@ notch==2025.2
     # via -r requirements.in
 numpy==2.3.0
     # via pandas
-oauthlib==3.2.2
+oauthlib==3.3.0
     # via databricks-sql-connector
 openpyxl==3.1.5
     # via databricks-sql-connector
