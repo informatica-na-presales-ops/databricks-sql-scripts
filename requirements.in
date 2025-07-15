@@ -1,5 +1,0 @@
-apscheduler
-databricks-sql-connector < 5
-datime
-notch
-psycopg2-binary
