@@ -47,22 +47,23 @@ wheels = [
 
 [[package]]
 name = "databricks-sql-connector"
-version = "4.2.1"
+version = "4.2.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "lz4" },
     { name = "oauthlib" },
     { name = "openpyxl" },
     { name = "pandas" },
+    { name = "pybreaker" },
     { name = "pyjwt" },
     { name = "python-dateutil" },
     { name = "requests" },
     { name = "thrift" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e4/ef/43c02012ce5c979263d24ee7a58fd6bbf2b8e9456addef7cca5b9961e142/databricks_sql_connector-4.2.1.tar.gz", hash = "sha256:d0068dd36d082e2e42159a91b6b2b84ba102c7e8d8752526eefdccfc4d56286d", size = 182383, upload-time = "2025-11-20T18:20:00.028Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d5/42/959d7e8aabcce35bb645287fb7ebe8af8a45c5623040f39e9118638b582e/databricks_sql_connector-4.2.2.tar.gz", hash = "sha256:409632a6adb93e849ecd5faaa2e98192e307c984e85cc7c696fb8e953acb7403", size = 186206, upload-time = "2025-12-04T10:55:31.501Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/88/8f/615302ddb22f097c6f76fa00257cb15ad65674345f78bf67a293d150616b/databricks_sql_connector-4.2.1-py3-none-any.whl", hash = "sha256:ee57033db656f8028a66134d608390b36c0770ababcc1da3e53bb8be8a226bc6", size = 206481, upload-time = "2025-11-20T18:19:58.897Z" },
+    { url = "https://files.pythonhosted.org/packages/aa/64/9522331c67b847b71bc322c3d1362c92f164bd4900185190d1fa1b125ce3/databricks_sql_connector-4.2.2-py3-none-any.whl", hash = "sha256:f76164a225f10c49c12b6895d132082919d2de828e19fe3813eb3dfe8f614fdc", size = 212321, upload-time = "2025-12-04T10:55:29.828Z" },
 ]
 
 [[package]]
@@ -244,6 +245,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/97/77/21b0ea2e1a73aa5fa9222b2a6b8ba325c43c3a8d54272839c991f2345656/psycopg2_binary-2.9.11-cp314-cp314-musllinux_1_2_riscv64.whl", hash = "sha256:32770a4d666fbdafab017086655bcddab791d7cb260a16679cc5a7338b64343b", size = 3044737, upload-time = "2025-10-30T02:55:35.69Z" },
     { url = "https://files.pythonhosted.org/packages/67/69/f36abe5f118c1dca6d3726ceae164b9356985805480731ac6712a63f24f0/psycopg2_binary-2.9.11-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:c3cb3a676873d7506825221045bd70e0427c905b9c8ee8d6acd70cfcbd6e576d", size = 3347643, upload-time = "2025-10-10T11:13:53.499Z" },
     { url = "https://files.pythonhosted.org/packages/e1/36/9c0c326fe3a4227953dfb29f5d0c8ae3b8eb8c1cd2967aa569f50cb3c61f/psycopg2_binary-2.9.11-cp314-cp314-win_amd64.whl", hash = "sha256:4012c9c954dfaccd28f94e84ab9f94e12df76b4afb22331b1f0d3154893a6316", size = 2803913, upload-time = "2025-10-10T11:13:57.058Z" },
+]
+
+[[package]]
+name = "pybreaker"
+version = "1.4.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f2/89/fbf98e383f1ec6d117af2cd983efdb3eb7018b63834c427025764194cac2/pybreaker-1.4.1.tar.gz", hash = "sha256:8df2d245c73ba40c8242c56ffb4f12138fbadc23e296224740c2028ea9dc1178", size = 15555, upload-time = "2025-09-21T15:12:04.499Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/44/75/e64d3d40a741e2be21d69154f4e5c43a66f0c603c5ef11f49e01429a5932/pybreaker-1.4.1-py3-none-any.whl", hash = "sha256:b4dab4a05195b7f2a64a6c1a6c4ba7a96534ef56ea7210e6bcb59f28897160e0", size = 12915, upload-time = "2025-09-21T15:12:02.284Z" },
 ]
 
 [[package]]
