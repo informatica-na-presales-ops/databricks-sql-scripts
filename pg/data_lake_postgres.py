@@ -7,12 +7,12 @@ log = logging.getLogger(__name__)
 def batch_upsert(cnx, sql, records):
     with cnx:
         with cnx.cursor() as cur:
-            log.info(f'Saving {len(records)} records to Postgres')
+            log.info(f"Saving {len(records)} records to Postgres")
             psycopg2.extras.execute_batch(cur, sql, records)
 
 
 def batch_upsert_iics_advanced_cluster_configs(cnx, records):
-    sql = '''
+    sql = """
         insert into iics_advanced_cluster_configs (
             cloud_type, config_id, config_key, iics_id, is_current, is_deleted,
             master_instance_type, org_id, org_key, org_uuid, pod_id, worker_instance_type
@@ -24,12 +24,12 @@ def batch_upsert_iics_advanced_cluster_configs(cnx, records):
             is_current = excluded.is_current, is_deleted = excluded.is_deleted,
             master_instance_type = excluded.master_instance_type, org_id = excluded.org_id, org_key = excluded.org_key,
             org_uuid = excluded.org_uuid, pod_id = excluded.pod_id, worker_instance_type = excluded.worker_instance_type
-    '''
+    """
     batch_upsert(cnx, sql, records)
 
 
 def batch_upsert_iics_advanced_cluster_instances(cnx, records):
-    sql = '''
+    sql = """
         insert into iics_advanced_cluster_instances (
             agent_group_id, cluster_config_id, ephemeral_id, iics_id, instance_id, instance_key,
             is_current, is_deleted, pod_id
@@ -40,12 +40,12 @@ def batch_upsert_iics_advanced_cluster_instances(cnx, records):
             agent_group_id = excluded.agent_group_id, cluster_config_id = excluded.cluster_config_id,
             ephemeral_id = excluded.ephemeral_id, iics_id = excluded.iics_id, instance_id = excluded.instance_id,
             is_current = excluded.is_current, is_deleted = excluded.is_deleted, pod_id = excluded.pod_id
-    '''
+    """
     batch_upsert(cnx, sql, records)
 
 
 def batch_upsert_iics_agents(cnx, records):
-    sql = '''
+    sql = """
         insert into iics_agents (
             agent_key, org_key, region_id, pod_id, org_id, org_uuid, agent_group_id,
             agent_group_name, agent_group_desc, agent_id, agent_name, agent_host,
@@ -78,12 +78,12 @@ def batch_upsert_iics_agents(cnx, records):
             agent_updated_by = excluded.agent_updated_by, agent_group_is_deleted = excluded.agent_group_is_deleted,
             agent_is_deleted = excluded.agent_is_deleted, is_current = excluded.is_current,
             record_updated_at = excluded.record_updated_at
-    '''
+    """
     batch_upsert(cnx, sql, records)
 
 
 def batch_upsert_iics_organizations(cnx, records):
-    sql = '''
+    sql = """
         insert into iics_organizations (
             customer_type, environment_type, is_active, is_current, is_deleted, is_disabled,
             org_edition_type, org_expires_at, org_id, org_key, org_last_updated_at, org_name,
@@ -103,12 +103,12 @@ def batch_upsert_iics_organizations(cnx, records):
             org_registered_at = excluded.org_registered_at, org_type = excluded.org_type,
             org_type_lic = excluded.org_type_lic, org_uuid = excluded.org_uuid, parent_org_id = excluded.parent_org_id,
             pod_id = excluded.pod_id, region_id = excluded.region_id, time_zone = excluded.time_zone
-    '''
+    """
     batch_upsert(cnx, sql, records)
 
 
 def batch_upsert_iics_serverless_environments(cnx, records):
-    sql = '''
+    sql = """
         insert into iics_serverless_environments (
             az, cloud_provider, created_at, expires_at, last_updated_at, name, org_key,
             org_uuid, pod_id, region, region_id, serverless_env_id, serverless_env_key,
@@ -123,12 +123,12 @@ def batch_upsert_iics_serverless_environments(cnx, records):
             org_key = excluded.org_key, org_uuid = excluded.org_uuid, pod_id = excluded.pod_id,
             region = excluded.region, region_id = excluded.region_id, serverless_env_id = excluded.serverless_env_id,
             type = excluded.type, user_name = excluded.user_name
-    '''
+    """
     batch_upsert(cnx, sql, records)
 
 
 def batch_upsert_iics_user_roles(cnx, records):
-    sql = '''
+    sql = """
         insert into iics_user_roles (
             created_at, created_by, is_deleted, is_read_only, org_id, org_key, org_uuid,
             pod_id, region_id, role_description, role_id, role_name, updated_at, updated_by,
@@ -144,24 +144,24 @@ def batch_upsert_iics_user_roles(cnx, records):
             role_description = excluded.role_description, role_id = excluded.role_id, role_name = excluded.role_name,
             updated_at = excluded.updated_at, updated_by = excluded.updated_by, user_id = excluded.user_id,
             user_key = excluded.user_key, user_role_uuid = excluded.user_role_uuid
-    '''
+    """
     batch_upsert(cnx, sql, records)
 
 
 def batch_upsert_iics_weekly_logins(cnx, records):
-    sql = '''
+    sql = """
         insert into iics_user_weekly_logins (
             week_start, email, login_count
         ) values (
             %(week_start)s, %(email)s, %(login_count)s
         ) on conflict (week_start, email) do update set
             login_count = excluded.login_count
-    '''
+    """
     batch_upsert(cnx, sql, records)
 
 
 def batch_upsert_iics_users(cnx, records):
-    sql = '''
+    sql = """
         insert into iics_users (
             created_at, created_by, email, first_name, full_name, is_deleted, last_name,
             org_id, org_key, org_uuid, pod_id, region_id, updated_at, updated_by,
@@ -177,65 +177,65 @@ def batch_upsert_iics_users(cnx, records):
             org_uuid = excluded.org_uuid, pod_id = excluded.pod_id, region_id = excluded.region_id,
             updated_at = excluded.updated_at, updated_by = excluded.updated_by, user_id = excluded.user_id,
             user_name = excluded.user_name
-    '''
+    """
     batch_upsert(cnx, sql, records)
 
 
 def get_iics_agents_max_record_updated_at(cnx):
-    sql = '''
+    sql = """
         select max(record_updated_at) max_record_updated_at from iics_agents
-    '''
+    """
     with cnx:
         with cnx.cursor() as cur:
             cur.execute(sql)
             row = cur.fetchone()
     if row is not None:
-        return row.get('max_record_updated_at')
+        return row.get("max_record_updated_at")
 
 
 def get_iics_organizations_max_org_last_updated_at(cnx):
-    sql = '''
+    sql = """
         select max(org_last_updated_at) max_org_last_updated_at from iics_organizations
-    '''
+    """
     with cnx:
         with cnx.cursor() as cur:
             cur.execute(sql)
             row = cur.fetchone()
     if row is not None:
-        return row.get('max_org_last_updated_at')
+        return row.get("max_org_last_updated_at")
 
 
 def get_iics_user_logs_max_user_log_key(cnx):
-    sql = '''
+    sql = """
         select max(user_log_key) max_user_log_key from iics_user_logs
-    '''
+    """
     with cnx:
         with cnx.cursor() as cur:
             cur.execute(sql)
             row = cur.fetchone()
     if row is not None:
-        return row.get('max_user_log_key')
+        return row.get("max_user_log_key")
 
 
 def get_iics_user_roles_max_updated_at(cnx):
-    sql = '''
+    sql = """
         select max(updated_at) max_updated_at from iics_user_roles
-    '''
+    """
     with cnx:
         with cnx.cursor() as cur:
             cur.execute(sql)
             row = cur.fetchone()
     if row is not None:
-        return row.get('max_updated_at')
+        return row.get("max_updated_at")
 
 
 def get_iics_users_max_updated_at(cnx):
-    sql = '''
+    sql = """
         select max(updated_at) max_updated_at from iics_users
-    '''
+    """
     with cnx:
         with cnx.cursor() as cur:
             cur.execute(sql)
             row = cur.fetchone()
     if row is not None:
-        return row.get('max_updated_at')
+        return row.get("max_updated_at")

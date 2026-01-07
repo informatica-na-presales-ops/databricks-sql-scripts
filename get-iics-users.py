@@ -16,10 +16,12 @@ log = logging.getLogger(__name__)
 
 def main_job(repeat_interval_hours: int = None):
     start = time.monotonic()
-    log.info('Running the main job')
+    log.info("Running the main job")
 
-    dbx_cnx = dbx.cnx.get_connection(os.getenv('DBX_HOSTNAME'), os.getenv('DBX_HTTP_PATH'), os.getenv('DBX_TOKEN'))
-    pg_cnx = pg.cnx.get_connection(os.getenv('PGSQL_DSN'))
+    dbx_cnx = dbx.cnx.get_connection(
+        os.getenv("DBX_HOSTNAME"), os.getenv("DBX_HTTP_PATH"), os.getenv("DBX_TOKEN")
+    )
+    pg_cnx = pg.cnx.get_connection(os.getenv("PGSQL_DSN"))
 
     updated_at_start = pg.data_lake_postgres.get_iics_users_max_updated_at(pg_cnx)
     if updated_at_start is None:
@@ -39,27 +41,36 @@ def main_job(repeat_interval_hours: int = None):
         pg.data_lake_postgres.batch_upsert_iics_users(pg_cnx, records)
         pass
 
-    log.info(f'Total records: {total}')
+    log.info(f"Total records: {total}")
 
     if repeat_interval_hours:
-        plural = 's'
+        plural = "s"
         if repeat_interval_hours == 1:
-            plural = ''
-        repeat_message = f'see you again in {repeat_interval_hours} hour{plural}'
+            plural = ""
+        repeat_message = f"see you again in {repeat_interval_hours} hour{plural}"
     else:
-        repeat_message = 'quitting'
+        repeat_message = "quitting"
     duration = int(time.monotonic() - start)
-    log.info(f'Main job complete in {datime.pretty_duration_short(duration)}, {repeat_message}')
+    log.info(
+        f"Main job complete in {datime.pretty_duration_short(duration)}, {repeat_message}"
+    )
 
 
 def main():
-    repeat = os.getenv('REPEAT', 'false').lower() in ('1', 'on', 'true', 'yes')
+    repeat = os.getenv("REPEAT", "false").lower() in ("1", "on", "true", "yes")
     if repeat:
-        repeat_interval_hours = int(os.getenv('REPEAT_INTERVAL_HOURS', '1'))
-        log.info(f'This job will repeat every {repeat_interval_hours} hours')
-        log.info('Change this value by setting the REPEAT_INTERVAL_HOURS environment variable')
+        repeat_interval_hours = int(os.getenv("REPEAT_INTERVAL_HOURS", "1"))
+        log.info(f"This job will repeat every {repeat_interval_hours} hours")
+        log.info(
+            "Change this value by setting the REPEAT_INTERVAL_HOURS environment variable"
+        )
         scheduler = apscheduler.schedulers.blocking.BlockingScheduler()
-        scheduler.add_job(main_job, 'interval', args=[repeat_interval_hours], hours=repeat_interval_hours)
+        scheduler.add_job(
+            main_job,
+            "interval",
+            args=[repeat_interval_hours],
+            hours=repeat_interval_hours,
+        )
         scheduler.add_job(main_job, args=[repeat_interval_hours])
         scheduler.start()
     else:
@@ -70,6 +81,6 @@ def handle_sigterm(_signal, _frame):
     sys.exit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     signal.signal(signal.SIGTERM, handle_sigterm)
     main()
