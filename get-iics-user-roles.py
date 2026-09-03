@@ -1,20 +1,22 @@
-import apscheduler.schedulers.blocking
-import datime
-import dbx.cnx
 import datetime
 import logging
-import notch
 import os
-import pg
 import signal
 import sys
 import time
+
+import apscheduler.schedulers.blocking
+import datime
+import notch
+
+import dbx.cnx
+import pg
 
 notch.configure()
 log = logging.getLogger(__name__)
 
 
-def main_job(repeat_interval_hours: int = None):
+def main_job(repeat_interval_hours: int | None = None) -> None:
     start = time.monotonic()
     log.info("Running the main job")
 
@@ -25,7 +27,7 @@ def main_job(repeat_interval_hours: int = None):
 
     updated_at_start = pg.data_lake_postgres.get_iics_user_roles_max_updated_at(pg_cnx)
     if updated_at_start is None:
-        updated_at_start = datetime.datetime(2000, 1, 1, tzinfo=datetime.timezone.utc)
+        updated_at_start = datetime.datetime(2000, 1, 1, tzinfo=datetime.UTC)
 
     records = []
     total = 0
@@ -39,7 +41,6 @@ def main_job(repeat_interval_hours: int = None):
 
     if len(records) > 0:
         pg.data_lake_postgres.batch_upsert_iics_user_roles(pg_cnx, records)
-        pass
 
     log.info(f"Total records: {total}")
 
@@ -51,18 +52,18 @@ def main_job(repeat_interval_hours: int = None):
     else:
         repeat_message = "quitting"
     duration = int(time.monotonic() - start)
-    log.info(
-        f"Main job complete in {datime.pretty_duration_short(duration)}, {repeat_message}"
-    )
+    duration_text = datime.pretty_duration_short(duration)
+    log.info("Main job complete in %s, %s", duration_text, repeat_message)
 
 
-def main():
+def main() -> None:
     repeat = os.getenv("REPEAT", "false").lower() in ("1", "on", "true", "yes")
     if repeat:
         repeat_interval_hours = int(os.getenv("REPEAT_INTERVAL_HOURS", "1"))
         log.info(f"This job will repeat every {repeat_interval_hours} hours")
         log.info(
-            "Change this value by setting the REPEAT_INTERVAL_HOURS environment variable"
+            "Change this value by setting the REPEAT_INTERVAL_HOURS "
+            "environment variable"
         )
         scheduler = apscheduler.schedulers.blocking.BlockingScheduler()
         scheduler.add_job(
@@ -77,7 +78,7 @@ def main():
         main_job()
 
 
-def handle_sigterm(_signal, _frame):
+def handle_sigterm(_signal: int, _frame: object) -> None:
     sys.exit()
 
 

@@ -1,154 +1,226 @@
 import logging
+from collections.abc import Mapping, Sequence
+from datetime import datetime
+from typing import Any
+
+import psycopg2.extensions
 import psycopg2.extras
 
 log = logging.getLogger(__name__)
 
 
-def batch_upsert(cnx, sql, records):
-    with cnx:
-        with cnx.cursor() as cur:
-            log.info(f"Saving {len(records)} records to Postgres")
-            psycopg2.extras.execute_batch(cur, sql, records)
+type Record = Mapping[str, Any]
 
 
-def batch_upsert_iics_advanced_cluster_configs(cnx, records):
+def batch_upsert(
+    cnx: psycopg2.extensions.connection, sql: str, records: Sequence[Record]
+) -> None:
+    with cnx, cnx.cursor() as cur:
+        log.info(f"Saving {len(records)} records to Postgres")
+        psycopg2.extras.execute_batch(cur, sql, records)
+
+
+def batch_upsert_iics_advanced_cluster_configs(
+    cnx: psycopg2.extensions.connection, records: Sequence[Record]
+) -> None:
     sql = """
         insert into iics_advanced_cluster_configs (
             cloud_type, config_id, config_key, iics_id, is_current, is_deleted,
-            master_instance_type, org_id, org_key, org_uuid, pod_id, worker_instance_type
+            master_instance_type, org_id, org_key, org_uuid, pod_id,
+            worker_instance_type
         ) values (
-            %(cloud_type)s, %(config_id)s, %(config_key)s, %(iics_id)s, %(is_current)s, %(is_deleted)s,
-            %(master_instance_type)s, %(org_id)s, %(org_key)s, %(org_uuid)s, %(pod_id)s, %(worker_instance_type)s
+            %(cloud_type)s, %(config_id)s, %(config_key)s, %(iics_id)s,
+            %(is_current)s, %(is_deleted)s, %(master_instance_type)s,
+            %(org_id)s, %(org_key)s, %(org_uuid)s, %(pod_id)s,
+            %(worker_instance_type)s
         ) on conflict (config_key) do update set
-            cloud_type = excluded.cloud_type, config_id = excluded.config_id, iics_id = excluded.iics_id,
+            cloud_type = excluded.cloud_type,
+            config_id = excluded.config_id,
+            iics_id = excluded.iics_id,
             is_current = excluded.is_current, is_deleted = excluded.is_deleted,
-            master_instance_type = excluded.master_instance_type, org_id = excluded.org_id, org_key = excluded.org_key,
-            org_uuid = excluded.org_uuid, pod_id = excluded.pod_id, worker_instance_type = excluded.worker_instance_type
+            master_instance_type = excluded.master_instance_type,
+            org_id = excluded.org_id, org_key = excluded.org_key,
+            org_uuid = excluded.org_uuid, pod_id = excluded.pod_id,
+            worker_instance_type = excluded.worker_instance_type
     """
     batch_upsert(cnx, sql, records)
 
 
-def batch_upsert_iics_advanced_cluster_instances(cnx, records):
+def batch_upsert_iics_advanced_cluster_instances(
+    cnx: psycopg2.extensions.connection, records: Sequence[Record]
+) -> None:
     sql = """
         insert into iics_advanced_cluster_instances (
-            agent_group_id, cluster_config_id, ephemeral_id, iics_id, instance_id, instance_key,
+            agent_group_id, cluster_config_id, ephemeral_id, iics_id,
+            instance_id, instance_key,
             is_current, is_deleted, pod_id
         ) values (
-            %(agent_group_id)s, %(cluster_config_id)s, %(ephemeral_id)s, %(iics_id)s, %(instance_id)s, %(instance_key)s,
+            %(agent_group_id)s, %(cluster_config_id)s, %(ephemeral_id)s,
+            %(iics_id)s, %(instance_id)s, %(instance_key)s,
             %(is_current)s, %(is_deleted)s, %(pod_id)s
         ) on conflict (instance_key) do update set
-            agent_group_id = excluded.agent_group_id, cluster_config_id = excluded.cluster_config_id,
-            ephemeral_id = excluded.ephemeral_id, iics_id = excluded.iics_id, instance_id = excluded.instance_id,
-            is_current = excluded.is_current, is_deleted = excluded.is_deleted, pod_id = excluded.pod_id
+            agent_group_id = excluded.agent_group_id,
+            cluster_config_id = excluded.cluster_config_id,
+            ephemeral_id = excluded.ephemeral_id, iics_id = excluded.iics_id,
+            instance_id = excluded.instance_id,
+            is_current = excluded.is_current, is_deleted = excluded.is_deleted,
+            pod_id = excluded.pod_id
     """
     batch_upsert(cnx, sql, records)
 
 
-def batch_upsert_iics_agents(cnx, records):
+def batch_upsert_iics_agents(
+    cnx: psycopg2.extensions.connection, records: Sequence[Record]
+) -> None:
     sql = """
         insert into iics_agents (
             agent_key, org_key, region_id, pod_id, org_id, org_uuid, agent_group_id,
             agent_group_name, agent_group_desc, agent_id, agent_name, agent_host,
             agent_description, is_active, agent_platform, agent_last_status_change_at,
             agent_group_created_at, agent_group_updated_at, agent_group_created_by,
-            agent_group_updated_by, agent_created_at, agent_updated_at, agent_created_by,
+            agent_group_updated_by, agent_created_at, agent_updated_at,
+            agent_created_by,
             agent_updated_by, agent_group_is_deleted, agent_is_deleted, is_current,
             record_updated_at
         ) values (
-            %(agent_key)s, %(org_key)s, %(region_id)s, %(pod_id)s, %(org_id)s, %(org_uuid)s, %(agent_group_id)s,
-            %(agent_group_name)s, %(agent_group_desc)s, %(agent_id)s, %(agent_name)s, %(agent_host)s,
-            %(agent_description)s, %(is_active)s, %(agent_platform)s, %(agent_last_status_change_at)s,
-            %(agent_group_created_at)s, %(agent_group_updated_at)s, %(agent_group_created_by)s,
-            %(agent_group_updated_by)s, %(agent_created_at)s, %(agent_updated_at)s, %(agent_created_by)s,
-            %(agent_updated_by)s, %(agent_group_is_deleted)s, %(agent_is_deleted)s, %(is_current)s,
+            %(agent_key)s, %(org_key)s, %(region_id)s, %(pod_id)s,
+            %(org_id)s, %(org_uuid)s, %(agent_group_id)s,
+            %(agent_group_name)s, %(agent_group_desc)s, %(agent_id)s,
+            %(agent_name)s, %(agent_host)s, %(agent_description)s,
+            %(is_active)s, %(agent_platform)s,
+            %(agent_last_status_change_at)s, %(agent_group_created_at)s,
+            %(agent_group_updated_at)s, %(agent_group_created_by)s,
+            %(agent_group_updated_by)s, %(agent_created_at)s,
+            %(agent_updated_at)s, %(agent_created_by)s, %(agent_updated_by)s,
+            %(agent_group_is_deleted)s, %(agent_is_deleted)s, %(is_current)s,
             %(record_updated_at)s
         ) on conflict (agent_key) do update set
-            org_key = excluded.org_key, region_id = excluded.region_id, pod_id = excluded.pod_id,
-            org_id = excluded.org_id, org_uuid = excluded.org_uuid, agent_group_id = excluded.agent_group_id,
-            agent_group_name = excluded.agent_group_name, agent_group_desc = excluded.agent_group_desc,
-            agent_id = excluded.agent_id, agent_name = excluded.agent_name, agent_host = excluded.agent_host,
-            agent_description = excluded.agent_description, is_active = excluded.is_active,
+            org_key = excluded.org_key, region_id = excluded.region_id,
+            pod_id = excluded.pod_id, org_id = excluded.org_id,
+            org_uuid = excluded.org_uuid,
+            agent_group_id = excluded.agent_group_id,
+            agent_group_name = excluded.agent_group_name,
+            agent_group_desc = excluded.agent_group_desc,
+            agent_id = excluded.agent_id, agent_name = excluded.agent_name,
+            agent_host = excluded.agent_host,
+            agent_description = excluded.agent_description,
+            is_active = excluded.is_active,
             agent_platform = excluded.agent_platform,
             agent_last_status_change_at = excluded.agent_last_status_change_at,
             agent_group_created_at = excluded.agent_group_created_at,
             agent_group_updated_at = excluded.agent_group_updated_at,
             agent_group_created_by = excluded.agent_group_created_by,
-            agent_group_updated_by = excluded.agent_group_updated_by, agent_created_at = excluded.agent_created_at,
-            agent_updated_at = excluded.agent_updated_at, agent_created_by = excluded.agent_created_by,
-            agent_updated_by = excluded.agent_updated_by, agent_group_is_deleted = excluded.agent_group_is_deleted,
-            agent_is_deleted = excluded.agent_is_deleted, is_current = excluded.is_current,
+            agent_group_updated_by = excluded.agent_group_updated_by,
+            agent_created_at = excluded.agent_created_at,
+            agent_updated_at = excluded.agent_updated_at,
+            agent_created_by = excluded.agent_created_by,
+            agent_updated_by = excluded.agent_updated_by,
+            agent_group_is_deleted = excluded.agent_group_is_deleted,
+            agent_is_deleted = excluded.agent_is_deleted,
+            is_current = excluded.is_current,
             record_updated_at = excluded.record_updated_at
     """
     batch_upsert(cnx, sql, records)
 
 
-def batch_upsert_iics_organizations(cnx, records):
+def batch_upsert_iics_organizations(
+    cnx: psycopg2.extensions.connection, records: Sequence[Record]
+) -> None:
     sql = """
         insert into iics_organizations (
-            customer_type, environment_type, is_active, is_current, is_deleted, is_disabled,
-            org_edition_type, org_expires_at, org_id, org_key, org_last_updated_at, org_name,
+            customer_type, environment_type, is_active, is_current, is_deleted,
+            is_disabled, org_edition_type, org_expires_at, org_id, org_key,
+            org_last_updated_at, org_name,
             org_registered_at, org_type, org_type_lic, org_uuid, parent_org_id, pod_id,
             region_id, time_zone
         ) values (
-            %(customer_type)s, %(environment_type)s, %(is_active)s, %(is_current)s, %(is_deleted)s, %(is_disabled)s,
-            %(org_edition_type)s, %(org_expires_at)s, %(org_id)s, %(org_key)s, %(org_last_updated_at)s, %(org_name)s,
-            %(org_registered_at)s, %(org_type)s, %(org_type_lic)s, %(org_uuid)s, %(parent_org_id)s, %(pod_id)s,
+            %(customer_type)s, %(environment_type)s, %(is_active)s,
+            %(is_current)s, %(is_deleted)s, %(is_disabled)s,
+            %(org_edition_type)s, %(org_expires_at)s, %(org_id)s,
+            %(org_key)s, %(org_last_updated_at)s, %(org_name)s,
+            %(org_registered_at)s, %(org_type)s, %(org_type_lic)s,
+            %(org_uuid)s, %(parent_org_id)s, %(pod_id)s,
             %(region_id)s, %(time_zone)s
         ) on conflict (org_key) do update set
-            customer_type = excluded.customer_type, environment_type = excluded.environment_type,
-            is_active = excluded.is_active, is_current = excluded.is_current, is_deleted = excluded.is_deleted,
-            is_disabled = excluded.is_disabled, org_edition_type = excluded.org_edition_type,
+            customer_type = excluded.customer_type,
+            environment_type = excluded.environment_type,
+            is_active = excluded.is_active, is_current = excluded.is_current,
+            is_deleted = excluded.is_deleted,
+            is_disabled = excluded.is_disabled,
+            org_edition_type = excluded.org_edition_type,
             org_expires_at = excluded.org_expires_at, org_id = excluded.org_id,
-            org_last_updated_at = excluded.org_last_updated_at, org_name = excluded.org_name,
-            org_registered_at = excluded.org_registered_at, org_type = excluded.org_type,
-            org_type_lic = excluded.org_type_lic, org_uuid = excluded.org_uuid, parent_org_id = excluded.parent_org_id,
-            pod_id = excluded.pod_id, region_id = excluded.region_id, time_zone = excluded.time_zone
+            org_last_updated_at = excluded.org_last_updated_at,
+            org_name = excluded.org_name,
+            org_registered_at = excluded.org_registered_at,
+            org_type = excluded.org_type, org_type_lic = excluded.org_type_lic,
+            org_uuid = excluded.org_uuid,
+            parent_org_id = excluded.parent_org_id,
+            pod_id = excluded.pod_id, region_id = excluded.region_id,
+            time_zone = excluded.time_zone
     """
     batch_upsert(cnx, sql, records)
 
 
-def batch_upsert_iics_serverless_environments(cnx, records):
+def batch_upsert_iics_serverless_environments(
+    cnx: psycopg2.extensions.connection, records: Sequence[Record]
+) -> None:
     sql = """
         insert into iics_serverless_environments (
             az, cloud_provider, created_at, expires_at, last_updated_at, name, org_key,
             org_uuid, pod_id, region, region_id, serverless_env_id, serverless_env_key,
             type, user_name
         ) values (
-            %(az)s, %(cloud_provider)s, %(created_at)s, %(expires_at)s, %(last_updated_at)s, %(name)s, %(org_key)s,
-            %(org_uuid)s, %(pod_id)s, %(region)s, %(region_id)s, %(serverless_env_id)s, %(serverless_env_key)s,
+            %(az)s, %(cloud_provider)s, %(created_at)s, %(expires_at)s,
+            %(last_updated_at)s, %(name)s, %(org_key)s, %(org_uuid)s,
+            %(pod_id)s, %(region)s, %(region_id)s,
+            %(serverless_env_id)s, %(serverless_env_key)s,
             %(type)s, %(user_name)s
         ) on conflict (serverless_env_key) do update set
-            az = excluded.az, cloud_provider = excluded.cloud_provider, created_at = excluded.created_at,
-            expires_at = excluded.expires_at, last_updated_at = excluded.last_updated_at, name = excluded.name,
-            org_key = excluded.org_key, org_uuid = excluded.org_uuid, pod_id = excluded.pod_id,
-            region = excluded.region, region_id = excluded.region_id, serverless_env_id = excluded.serverless_env_id,
+            az = excluded.az, cloud_provider = excluded.cloud_provider,
+            created_at = excluded.created_at, expires_at = excluded.expires_at,
+            last_updated_at = excluded.last_updated_at,
+            name = excluded.name, org_key = excluded.org_key,
+            org_uuid = excluded.org_uuid, pod_id = excluded.pod_id,
+            region = excluded.region, region_id = excluded.region_id,
+            serverless_env_id = excluded.serverless_env_id,
             type = excluded.type, user_name = excluded.user_name
     """
     batch_upsert(cnx, sql, records)
 
 
-def batch_upsert_iics_user_roles(cnx, records):
+def batch_upsert_iics_user_roles(
+    cnx: psycopg2.extensions.connection, records: Sequence[Record]
+) -> None:
     sql = """
         insert into iics_user_roles (
             created_at, created_by, is_deleted, is_read_only, org_id, org_key, org_uuid,
-            pod_id, region_id, role_description, role_id, role_name, updated_at, updated_by,
+            pod_id, region_id, role_description, role_id, role_name, updated_at,
+            updated_by,
             user_id, user_key, user_role_key, user_role_uuid
         ) values (
-            %(created_at)s, %(created_by)s, %(is_deleted)s, %(is_read_only)s, %(org_id)s, %(org_key)s, %(org_uuid)s,
-            %(pod_id)s, %(region_id)s, %(role_description)s, %(role_id)s, %(role_name)s, %(updated_at)s, %(updated_by)s,
+            %(created_at)s, %(created_by)s, %(is_deleted)s, %(is_read_only)s,
+            %(org_id)s, %(org_key)s, %(org_uuid)s, %(pod_id)s, %(region_id)s,
+            %(role_description)s, %(role_id)s, %(role_name)s, %(updated_at)s,
+            %(updated_by)s,
             %(user_id)s, %(user_key)s, %(user_role_key)s, %(user_role_uuid)s
         ) on conflict (user_role_key) do update set
-            created_at = excluded.created_at, created_by = excluded.created_by, is_deleted = excluded.is_deleted,
-            is_read_only = excluded.is_read_only, org_id = excluded.org_id, org_key = excluded.org_key,
-            org_uuid = excluded.org_uuid, pod_id = excluded.pod_id, region_id = excluded.region_id,
-            role_description = excluded.role_description, role_id = excluded.role_id, role_name = excluded.role_name,
-            updated_at = excluded.updated_at, updated_by = excluded.updated_by, user_id = excluded.user_id,
-            user_key = excluded.user_key, user_role_uuid = excluded.user_role_uuid
+            created_at = excluded.created_at, created_by = excluded.created_by,
+            is_deleted = excluded.is_deleted,
+            is_read_only = excluded.is_read_only, org_id = excluded.org_id,
+            org_key = excluded.org_key, org_uuid = excluded.org_uuid,
+            pod_id = excluded.pod_id, region_id = excluded.region_id,
+            role_description = excluded.role_description,
+            role_id = excluded.role_id, role_name = excluded.role_name,
+            updated_at = excluded.updated_at, updated_by = excluded.updated_by,
+            user_id = excluded.user_id, user_key = excluded.user_key,
+            user_role_uuid = excluded.user_role_uuid
     """
     batch_upsert(cnx, sql, records)
 
 
-def batch_upsert_iics_weekly_logins(cnx, records):
+def batch_upsert_iics_weekly_logins(
+    cnx: psycopg2.extensions.connection, records: Sequence[Record]
+) -> None:
     sql = """
         insert into iics_user_weekly_logins (
             week_start, email, login_count
@@ -160,82 +232,94 @@ def batch_upsert_iics_weekly_logins(cnx, records):
     batch_upsert(cnx, sql, records)
 
 
-def batch_upsert_iics_users(cnx, records):
+def batch_upsert_iics_users(
+    cnx: psycopg2.extensions.connection, records: Sequence[Record]
+) -> None:
     sql = """
         insert into iics_users (
             created_at, created_by, email, first_name, full_name, is_deleted, last_name,
             org_id, org_key, org_uuid, pod_id, region_id, updated_at, updated_by,
             user_id, user_key, user_name
         ) values (
-            %(created_at)s, %(created_by)s, %(email)s, %(first_name)s, %(full_name)s, %(is_deleted)s, %(last_name)s,
-            %(org_id)s, %(org_key)s, %(org_uuid)s, %(pod_id)s, %(region_id)s, %(updated_at)s, %(updated_by)s,
+            %(created_at)s, %(created_by)s, %(email)s, %(first_name)s,
+            %(full_name)s, %(is_deleted)s, %(last_name)s, %(org_id)s,
+            %(org_key)s, %(org_uuid)s, %(pod_id)s, %(region_id)s,
+            %(updated_at)s, %(updated_by)s,
             %(user_id)s, %(user_key)s, %(user_name)s
         ) on conflict (user_key) do update set
-            created_at = excluded.created_at, created_by = excluded.created_by, email = excluded.email,
-            first_name = excluded.first_name, full_name = excluded.full_name, is_deleted = excluded.is_deleted,
-            last_name = excluded.last_name, org_id = excluded.org_id, org_key = excluded.org_key,
-            org_uuid = excluded.org_uuid, pod_id = excluded.pod_id, region_id = excluded.region_id,
-            updated_at = excluded.updated_at, updated_by = excluded.updated_by, user_id = excluded.user_id,
+            created_at = excluded.created_at, created_by = excluded.created_by,
+            email = excluded.email, first_name = excluded.first_name,
+            full_name = excluded.full_name, is_deleted = excluded.is_deleted,
+            last_name = excluded.last_name, org_id = excluded.org_id,
+            org_key = excluded.org_key, org_uuid = excluded.org_uuid,
+            pod_id = excluded.pod_id, region_id = excluded.region_id,
+            updated_at = excluded.updated_at, updated_by = excluded.updated_by,
+            user_id = excluded.user_id,
             user_name = excluded.user_name
     """
     batch_upsert(cnx, sql, records)
 
 
-def get_iics_agents_max_record_updated_at(cnx):
+def get_iics_agents_max_record_updated_at(
+    cnx: psycopg2.extensions.connection,
+) -> datetime | None:
     sql = """
         select max(record_updated_at) max_record_updated_at from iics_agents
     """
-    with cnx:
-        with cnx.cursor() as cur:
-            cur.execute(sql)
-            row = cur.fetchone()
+    with cnx, cnx.cursor() as cur:
+        cur.execute(sql)
+        row = cur.fetchone()
     if row is not None:
         return row.get("max_record_updated_at")
 
 
-def get_iics_organizations_max_org_last_updated_at(cnx):
+def get_iics_organizations_max_org_last_updated_at(
+    cnx: psycopg2.extensions.connection,
+) -> datetime | None:
     sql = """
         select max(org_last_updated_at) max_org_last_updated_at from iics_organizations
     """
-    with cnx:
-        with cnx.cursor() as cur:
-            cur.execute(sql)
-            row = cur.fetchone()
+    with cnx, cnx.cursor() as cur:
+        cur.execute(sql)
+        row = cur.fetchone()
     if row is not None:
         return row.get("max_org_last_updated_at")
 
 
-def get_iics_user_logs_max_user_log_key(cnx):
+def get_iics_user_logs_max_user_log_key(
+    cnx: psycopg2.extensions.connection,
+) -> int | None:
     sql = """
         select max(user_log_key) max_user_log_key from iics_user_logs
     """
-    with cnx:
-        with cnx.cursor() as cur:
-            cur.execute(sql)
-            row = cur.fetchone()
+    with cnx, cnx.cursor() as cur:
+        cur.execute(sql)
+        row = cur.fetchone()
     if row is not None:
         return row.get("max_user_log_key")
 
 
-def get_iics_user_roles_max_updated_at(cnx):
+def get_iics_user_roles_max_updated_at(
+    cnx: psycopg2.extensions.connection,
+) -> datetime | None:
     sql = """
         select max(updated_at) max_updated_at from iics_user_roles
     """
-    with cnx:
-        with cnx.cursor() as cur:
-            cur.execute(sql)
-            row = cur.fetchone()
+    with cnx, cnx.cursor() as cur:
+        cur.execute(sql)
+        row = cur.fetchone()
     if row is not None:
         return row.get("max_updated_at")
 
 
-def get_iics_users_max_updated_at(cnx):
+def get_iics_users_max_updated_at(
+    cnx: psycopg2.extensions.connection,
+) -> datetime | None:
     sql = """
         select max(updated_at) max_updated_at from iics_users
     """
-    with cnx:
-        with cnx.cursor() as cur:
-            cur.execute(sql)
-            row = cur.fetchone()
+    with cnx, cnx.cursor() as cur:
+        cur.execute(sql)
+        row = cur.fetchone()
     if row is not None:
         return row.get("max_updated_at")
